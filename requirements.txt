@@ -1,0 +1,12 @@
+numpy
+pandas
+matplotlib
+seaborn
+scikit-learn
+Flask
+pickle
+ipykernel
+streamlit
+flask_session
+flask_sqlalchemy
+flask_bcrypt

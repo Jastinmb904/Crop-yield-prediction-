@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General body styling */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(to right, #09122C, #0c0d17);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+            cursor: none; /* Hide default cursor */
+            perspective: 1000px;
+        }
+
+        /* Animated particles background */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        /* Custom cursor */
+        .cursor {
+            width: 25px;
+            height: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            transition: transform 0.1s ease, width 0.1s ease, height 0.1s ease, background 0.3s ease;
+            mix-blend-mode: difference;
+        }
+
+        /* .cursor-follower {
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            position: fixed;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 9998;
+            transition: transform 0.2s ease, width 0.2s ease, height 0.2s ease, background 0.3s ease;
+        } */
+
+        /* Animated moving lines */
+        .moving-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .line {
+            position: absolute;
+            width: 100%;
+            height: 1px;
+            background: rgba(242, 5, 131, 0.1);
+            animation: moveLines 8s linear infinite;
+        }
+
+        .line:nth-child(1) {
+            top: 10%;
+            animation-delay: 0s;
+        }
+        .line:nth-child(2) {
+            top: 30%;
+            animation-delay: 1s;
+            opacity: 0.6;
+        }
+        .line:nth-child(3) {
+            top: 50%;
+            animation-delay: 2s;
+        }
+        .line:nth-child(4) {
+            top: 70%;
+            animation-delay: 3s;
+            opacity: 0.6;
+        }
+        .line:nth-child(5) {
+            top: 90%;
+            animation-delay: 4s;
+        }
+
+        /* Add vertical lines */
+        .vertical-line {
+            position: absolute;
+            width: 1px;
+            height: 100%;
+            background: rgba(20, 241, 149, 0.1);
+            animation: moveVerticalLines 12s linear infinite;
+        }
+
+        .vertical-line:nth-child(1) {
+            left: 20%;
+            animation-delay: 0s;
+        }
+        .vertical-line:nth-child(2) {
+            left: 40%;
+            animation-delay: 2s;
+            opacity: 0.6;
+        }
+        .vertical-line:nth-child(3) {
+            left: 60%;
+            animation-delay: 4s;
+        }
+        .vertical-line:nth-child(4) {
+            left: 80%;
+            animation-delay: 6s;
+            opacity: 0.6;
+        }
+
+        @keyframes moveLines {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes moveVerticalLines {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        /* Form container */
+        .container {
+            background: linear-gradient(to right, rgba(9, 18, 44, 0.7), rgba(61, 61, 61, 0.7));
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(15px);
+            text-align: center;
+            width: 450px;
+            position: relative;
+            z-index: 2;
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+
+        .container:hover {
+            transform: translateY(-5px) rotateX(2deg) rotateY(2deg);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4), 
+                      0 0 30px rgba(106, 17, 203, 0.3);
+        }
+
+        /* Container background effect */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(116, 98, 249, 0.1) 0%, transparent 60%);
+            transform: rotate(0deg);
+            animation: rotateGradient 10s linear infinite;
+            z-index: -1;
+        }
+
+        /* Container edge glow effect */
+        .container::after {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            border-radius: 15px;
+            /* background: linear-gradient(45deg, #6a11cb, transparent, #2575fc, transparent, #14F195); */
+            background-size: 400% 400%;
+            z-index: -2;
+            filter: blur(5px);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            animation: glowingBorder 6s ease-in-out infinite;
+        }
+
+        .container:hover::after {
+            opacity: 0.8;
+        }
+
+        @keyframes glowingBorder {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes rotateGradient {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Headings */
+        h2 {
+            color: #fff;
+            font-size: 26px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+            position: relative;
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            border-radius: 3px;
+            animation: expandWidth 3s ease-in-out infinite;
+        }
+
+        /* Add animated dots after heading */
+        /* h2 span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #14F195; 
+            margin: 0 2px;
+            opacity: 0;
+            animation: fadeInOut 1.5s infinite;
+            vertical-align: middle;
+        } */
+
+        h2 span:nth-child(1) { animation-delay: 0s; }
+        h2 span:nth-child(2) { animation-delay: 0.2s; }
+        h2 span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes expandWidth {
+            0%, 100% { width: 50px; }
+            50% { width: 150px; }
+        }
+
+        /* Input fields */
+        .input-container {
+            position: relative;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        input {
+            width: 90%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            background: rgb(245, 243, 243);
+  color: rgb(12, 12, 12);
+            transition: all 0.3s;
+            box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.2);
+        }
+        select {
+            width: 97%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            outline: none;
+            background: rgb(245, 243, 243);
+       color: rgb(12, 12, 12);
+            transition: all 0.3s;
+            box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        input::placeholder {
+      color: rgb(12, 12, 12);
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            box-shadow: 0 0 20px rgba(106, 17, 203, 0.5);
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.02);
+        }
+
+        input:focus::placeholder {
+            opacity: 0;
+            transform: translateY(-15px);
+        }
+
+        /* Input focus animation */
+        .input-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 5%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            transition: width 0.4s ease;
+        }
+
+        .input-container:focus-within::after {
+            width: 90%;
+        }
+
+        /* Animated label for input fields */
+        .pseudo-label {
+            position: absolute;
+            left: 14px;
+            top: -20px;
+            font-size: 12px;
+            color: #14F195;
+            pointer-events: none;
+            transform: translateY(30px);
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .input-container:focus-within .pseudo-label {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        input:not(:placeholder-shown) + .pseudo-label {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Button */
+        button {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 26px;
+            width: 100%;
+            background: linear-gradient(45deg, #6a11cb, #8f9093);
+            color: white;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s;
+            overflow: hidden;
+            z-index: 1;
+          
+        }
+
+        button::before {
+            content: '';
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: absolute;
+            top: 0;
+            left: 0%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 1s;
+            z-index: -1;
+        }
+
+        button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        button:hover::before {
+            left: 100%;
+            animation: shimmer 1.5s infinite;
+        } */
+
+        /* Button ripple effect */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        /* Prediction result */
+        .result {
+            position: absolute;
+            color: #fff;
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 25px;
+            padding: 15px;
+            margin-left: 65rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+            animation: fadeInUp 0.8s ease-in-out;
+            background: rgba(79, 49, 87, 0.2);
+            border-radius: 8px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation-fill-mode: forwards;
+            /* border: 1px solid blue */
+            overflow: hidden;
+        }
+
+        .result::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left:0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(to bottom, #6a11cb, #2575fc, #14F195);
+            animation: borderPulse 2s infinite;
+        }
+
+        @keyframes borderPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Error messages */
+        .error {
+            color: #ff4d6d;
+            font-weight: bold;
+            background: rgba(255, 77, 109, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            animation: shake 0.5s ease-in-out;
+            border-left: 3px solid #ff4d6d;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            50% { transform: translateX(8px); }
+            75% { transform: translateX(-8px); }
+            100% { transform: translateX(0); }
+        }
+
+        /* Logout link */
+        a {
+            display: inline-block;
+            margin-top: 25px;
+            text-decoration: none;
+            color: #fff;
+            font-size: 16px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 1s;
+        }
+
+        a:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        a:hover::before {
+            left: 100%;
+        }
+
+        /* Fireworks effect for cursor click */
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            pointer-events: none;
+            background: radial-gradient(circle, white 0%, transparent 70%);
+            z-index: 999;
+            animation: firework 1s ease-out;
+            transform: scale(0);
+        }
+
+        @keyframes firework {
+            0% { transform: scale(0); opacity: 1; }
+            50% { transform: scale(7); opacity: 0.5; }
+            100% { transform: scale(12); opacity: 0; }
+        }
+
+        /* Floating elements */
+        .float {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+            animation: float 15s linear infinite;
+            z-index: 1;
+        }
+
+        /* Add different shaped floating elements */
+        .float-square {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: rgba(106, 17, 203, 0.1);
+            animation: floatRotate 20s linear infinite;
+            z-index: 1;
+        }
+
+        .float-triangle {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-bottom: 35px solid rgba(20, 241, 149, 0.1);
+            animation: floatRotate 25s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0) translateX(0); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: translateY(-800px) translateX(200px); opacity: 0; }
+        }
+
+        @keyframes floatRotate {
+            0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: translateY(-800px) translateX(200px) rotate(360deg); opacity: 0; }
+        }
+
+        /* Logo styling */
+        .logo-container {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 3;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(106, 17, 203, 0.7);
+            display: flex;
+            align-items: center;
+            animation: glowPulse 3s infinite;
+        }
+
+        .logo span {
+            color: #14F195;
+            position: relative;
+        }
+
+        /* Add animated underline to logo */
+        .logo span::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #14F195;
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.5s ease;
+            animation: pulseLine 3s infinite;
+        }
+
+        .logo:hover span::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        @keyframes pulseLine {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .logo-icon {
+            margin-right: 10px;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(106, 17, 203, 0.7);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Add rotating shine effect to logo icon */
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 45%, rgba(255, 255, 255, 0.5) 50%, transparent 55%);
+            animation: shineEffect 3s infinite;
+        }
+
+        @keyframes shineEffect {
+            0% { transform: rotate(0) scale(0.5); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { text-shadow: 0 0 10px rgba(106, 17, 203, 0.7); }
+            50% { text-shadow: 0 0 20px rgba(106, 17, 203, 0.9), 0 0 30px rgba(37, 117, 252, 0.8); }
+        }
+
+        /* Logo pulse effect */
+        .logo::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            background: rgba(106, 17, 203, 0.3);
+            z-index: -1;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 0.3; }
+            100% { transform: scale(1); opacity: 0.7; }
+        }
+
+        /* Data visualization animation in background */
+        .data-viz {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 300px;
+            height: 100%;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .data-bar {
+            position: absolute;
+            bottom: 0;
+            width: 8px;
+            border-radius: 4px 4px 0 0;
+            background: linear-gradient(to top, #6a11cb, #2575fc);
+            animation: dataBarGrow 3s ease-in-out infinite;
+        }
+
+        @keyframes dataBarGrow {
+            0%, 100% { height: 30%; }
+            50% { height: 70%; }
+        }
+
+        /* Lightning effects for special interactions */
+        .lightning {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            opacity: 0;
+            z-index: 9000;
+            background: rgba(255, 255, 255, 0.1);
+            transition: opacity 0.1s;
+        }
+
+        /* 3D perspective tilt effect for container */
+        .tilt-effect {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        /* Loading spinner animation */
+        .spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        button.loading .spinner {
+            opacity: 1;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Typewriter effect for result */
+        .typewriter {
+            overflow: hidden;
+            border-right: 2px solid #14F195;
+            white-space: nowrap;
+            margin: 0 auto;
+            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: #14F195; }
+        }
+
+        /* Notification badge animation */
+        .notification {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 18px;
+            height: 18px;
+            background-color: #ff4d6d;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            color: white;
+            animation: notificationPulse 2s infinite;
+        }
+
+        @keyframes notificationPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Custom cursor elements -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
+
+    <!-- Lightning effect overlay -->
+    <div class="lightning"></div>
+
+    <!-- Logo -->
+    <div class="logo-container">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M7,21H3V13H7V21M11,21H9V5H11V21M15,21H13V13H15V21M19,21H17V9H19V21M23,3H1V23H23V3M5,3A2,2 0 0,1 7,5A2,2 0 0,1 5,7A2,2 0 0,1 3,5A2,2 0 0,1 5,3Z" />
+                </svg>
+            </div>
+            <div>Agro<span>Predict</span></div>
+        </div>
+    </div>
+
+    <!-- Data visualization background element -->
+    <div class="data-viz">
+        <div class="data-bar" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="data-bar" style="left: 20%; animation-delay: 0.5s;"></div>
+        <div class="data-bar" style="left: 30%; animation-delay: 1s;"></div>
+        <div class="data-bar" style="left: 40%; animation-delay: 1.5s;"></div>
+        <div class="data-bar" style="left: 50%; animation-delay: 2s;"></div>
+        <div class="data-bar" style="left: 60%; animation-delay: 2.5s;"></div>
+        <div class="data-bar" style="left: 70%; animation-delay: 1.2s;"></div>
+        <div class="data-bar" style="left: 80%; animation-delay: 0.7s;"></div>
+    </div>
+
+    <!-- Particles background -->
+    <div id="particles-js"></div>
+
+    <!-- Moving lines -->
+    <div class="moving-lines">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
+        <!-- Adding vertical lines -->
+        <div class="vertical-line"></div>
+        <div class="vertical-line"></div>
+        <div class="vertical-line"></div>
+        <div class="vertical-line"></div>
+    </div>
+
+    <!-- Floating elements -->
+    <div class="float" style="left: 10%; top: 90%;"></div>
+    <div class="float" style="left: 20%; top: 80%; animation-delay: 2s;"></div>
+    <div class="float" style="left: 70%; top: 85%; animation-delay: 5s;"></div>
+    <div class="float" style="left: 85%; top: 75%; animation-delay: 8s;"></div>
+    <!-- Adding different shaped floating elements -->
+    <div class="float-square" style="left: 15%; top: 75%; animation-delay: 3s;"></div>
+    <div class="float-square" style="left: 65%; top: 85%; animation-delay: 7s;"></div>
+    <div class="float-triangle" style="left: 30%; top: 90%; animation-delay: 4s;"></div>
+    <div class="float-triangle" style="left: 75%; top: 80%; animation-delay: 6s;"></div>
+
+    <!-- Main container with 3D tilt effect -->
+    <div class="container tilt-effect">
+        <h2>Prediction Page
+            <span></span>
+            <span></span>
+            <span></span>
+        </h2>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST">
+    
+                <div class="input-container">
+                    <input type="number" name="Year" placeholder="Year" 
+                           value="{{ form_data.Year if form_data else '' }}" required>
+                    <span class="pseudo-label">Year</span>
+                </div>
+                <div class="input-container">
+                    <input type="number" step="0.01" name="average_rain_fall_mm_per_year" 
+                           placeholder="Average Rainfall (mm)" 
+                           value="{{ form_data.average_rain_fall_mm_per_year if form_data else '' }}" required>
+                    <span class="pseudo-label">Average Rainfall (mm)</span>
+                </div>
+                <div class="input-container">
+                    <input type="number" step="0.01" name="pesticides_tonnes" 
+                           placeholder="Pesticides (tonnes)" 
+                           value="{{ form_data.pesticides_tonnes if form_data else '' }}" required>
+                    <span class="pseudo-label">Pesticides (tonnes)</span>
+                </div>
+                <div class="input-container">
+                    <input type="number" step="0.01" name="avg_temp" 
+                           placeholder="Average Temperature" 
+                           value="{{ form_data.avg_temp if form_data else '' }}" required>
+                    <span class="pseudo-label">Average Temperature</span>
+                </div>
+                <div class="input-container">
+    <select name="Area" class="styled-select" required>
+        <option value="" disabled {% if not form_data.Area %}selected{% endif %}>Select Area</option>
+        {% for area in area_options %}
+            <option value="{{ area }}" {% if form_data.Area == area %}selected{% endif %}>{{ area }}</option>
+        {% endfor %}
+    </select>
+    <span class="pseudo-label">Area</span>
+</div>
+
+<div class="input-container">
+    <select name="Item" class="styled-select" required>
+        <option value="" disabled {% if not form_data.Item %}selected{% endif %}>Select Item</option>
+        {% for item in item_options %}
+            <option value="{{ item }}" {% if form_data.Item == item %}selected{% endif %}>{{ item }}</option>
+        {% endfor %}
+    </select>
+    <span class="pseudo-label">Item</span>
+</div>
+
+                <button type="submit" id="predict-btn">
+                    PREDICT
+                </button>
+            </form>
+            
+            {% if prediction is not none %}
+                <p class="result">Predicted Output:{{ prediction }}</p>
+            {% endif %}
+
+
+        <a href="{{ url_for('logout') }}">Logout</a>
+        <a href="{{ url_for('predict') }}">clear</a>
+    </div>
+
+        {% if prediction is not none %}
+            <p class="result">Predicted Output: {{ prediction }} hg/ha</p>
+        {% endif %}
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // Particles.js configuration
+        particlesJS("particles-js", {
+            "particles": {
+                "number": {
+                    "value": 80,
+                    "density": {
+                        "enable": true,
+                        "value_area": 800
+                    }
+                },
+                "color": {
+                    "value": "#ffffff"
+                },
+                "shape": {
+                    "type": "circle",
+                    "stroke": {
+                        "width": 0,
+                        "color": "#000000"
+                    },
+                    "polygon": {
+                        "nb_sides": 5
+                    }
+                },
+                "opacity": {
+                    "value": 0.3,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 1,
+                        "opacity_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "size": {
+                    "value": 3,
+                    "random": true,
+                    "anim": {
+                        "enable": true,
+                        "speed": 2,
+                        "size_min": 0.1,
+                        "sync": false
+                    }
+                },
+                "line_linked": {
+                    "enable": true,
+                    "distance": 150,
+                    "color": "#ffffff",
+                    "opacity": 0.2,
+                    "width": 1
+                },
+                "move": {
+                    "enable": true,
+                    "speed": 1,
+                    "direction": "none",
+                    "random": true,
+                    "straight": false,
+                    "out_mode": "out",
+                    "bounce": false,
+                    "attract": {
+                        "enable": false,
+                        "rotateX": 600,
+                        "rotateY": 1200
+                    }
+                }
+            },
+            "interactivity": {
+                "detect_on": "canvas",
+                "events": {
+                    "onhover": {
+                        "enable": true,
+                        "mode": "grab"
+                    },
+                    "onclick": {
+                        "enable": true,
+                        "mode": "push"
+                    },
+                    "resize": true
+                },
+                "modes": {
+                    "grab": {
+                        "distance": 140,
+                        "line_linked": {
+                            "opacity": 0.6
+                        }
+                    },
+                    "push": {
+                        "particles_nb": 4
+                    }
+                }
+            },
+            "retina_detect": true
+        });
+
+        // Custom cursor
+        document.addEventListener('DOMContentLoaded', () => {
+            const cursor = document.querySelector('.cursor');
+            const cursorFollower = document.querySelector('.cursor-follower');
+            
+            document.addEventListener('mousemove', (e) => {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+                
+                // Add a slight delay to the follower for a trailing effect
+                setTimeout(() => {
+                    cursorFollower.style.left = e.clientX + 'px';
+                    cursorFollower.style.top = e.clientY + 'px';
+                }, 50);
+            });
+
+            // Cursor effects on interactive elements
+            const interactiveElements = document.querySelectorAll('button, input, a');
+            
+            interactiveElements.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
+                    cursorFollower.style.transform = 'translate(-50%, -50%) scale(0.5)';
+                    cursorFollower.style.background = 'rgba(106, 17, 203, 0.8)';
+                });
+                
+                el.addEventListener('mouseleave', () => {
+                    cursor.style.transform = 'translate(-50%, -50%) scale(1)';
+                    cursorFollower.style.transform = 'translate(-50%, -50%) scale(1)';
+                    cursorFollower.style.background = 'rgba(255, 255, 255, 0.8)';
+                });
+            });
+
+            // Fireworks effect on click
+            document.addEventListener('click', (e) => {
+                const numFireworks = 8;
+                const colors = ['#ff4d6d', '#25a2fc', '#9945FF', '#14F195', '#ffffff'];
+                
+                for (let i = 0; i < numFireworks; i++) {
+                    createFirework(e.clientX, e.clientY, colors[Math.floor(Math.random() * colors.length)]);
+                }
+            });
+
+            function createFirework(x, y, color) {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.left = x + 'px';
+                firework.style.top = y + 'px';
+                firework.style.background = color;
+                
+                // Random direction
+                const angle = Math.random() * Math.PI * 2;
+                const distance = Math.random() * 50 + 50;
+                const posX = x + Math.cos(angle) * distance;
+                const posY = y + Math.sin(angle) * distance;
+                
+                document.body.appendChild(firework);
+                
+                // Add unique animation to each firework
+                firework.animate([
+                    { transform: `translate(0, 0) scale(0)`, opacity: 1 },
+                    { transform: `translate(${Math.cos(angle) * distance}px, ${Math.sin(angle) * distance}px) scale(${Math.random() * 6 + 4})`, opacity: 0 }
+                ], {
+                    duration: Math.random() * 500 + 800,
+                    easing: 'cubic-bezier(0,.9,.57,1)'
+                });
+                
+                // Remove the element after animation completes
+                setTimeout(() => {
+                    firework.remove();
+                }, 1500);
+            }
+
+            // Button click animation
+            const predictBtn = document.getElementById('predict-btn');
+            predictBtn.addEventListener('click', (e) => {
+                const button = e.currentTarget;
+                
+                // Create ripple effect
+                const ripple = document.createElement('span');
+                ripple.className = 'ripple';
+                ripple.style.position = 'absolute';
+                ripple.style.borderRadius = '50%';
+                ripple.style.backgroundColor = 'rgba(255, 255, 255, 0.3)';
+                ripple.style.transform = 'scale(0)';
+                ripple.style.animation = 'ripple 0.6s linear';
+                ripple.style.pointerEvents = 'none';
+                
+                const rect = button.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size / 2;
+                const y = e.clientY - rect.top - size / 2;
+                
+                ripple.style.width = ripple.style.height = size + 'px';
+                ripple.style.left = x + 'px';
+                ripple.style.top = y + 'px';
+                
+                button.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+
+            // Logo animation
+            const logo = document.querySelector('.logo');
+            logo.style.opacity = '0';
+            logo.style.transform = 'translateX(-20px)';
+            
+            setTimeout(() => {
+                logo.style.transition = 'opacity 1s ease, transform 1s ease';
+                logo.style.opacity = '1';
+                logo.style.transform = 'translateX(0)';
+            }, 300);
+
+            // Add floating elements animation
+            for (let i = 0; i < 10; i++) {
+                createFloatingElement();
+            }
+
+            function createFloatingElement() {
+                const float = document.createElement('div');
+                float.className = 'float';
+                float.style.left = Math.random() * 100 + '%';
+                float.style.top = Math.random() * 100 + '%';
+                float.style.width = Math.random() * 30 + 20 + 'px';
+                float.style.height = float.style.width;
+                float.style.animationDuration = Math.random() * 10 + 10 + 's';
+                float.style.animationDelay = Math.random() * 5 + 's';
+                document.body.appendChild(float);
+                
+                // Remove and recreate after animation
+                setTimeout(() => {
+                    float.remove();
+                    createFloatingElement();
+                }, parseFloat(float.style.animationDuration) * 1000);
+            }
+
+            // Input field animations - simulate label reveal
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', () => {
+                    // Simulate floating label effect
+                    input.style.paddingTop = '18px';
+                    input.style.paddingBottom = '6px';
+                    
+                    // Create pseudo label
+                    if (!input.parentElement.querySelector('.pseudo-label')) {
+                        const label = document.createElement('div');
+                        label.className = 'pseudo-label';
+                        label.style.position = 'absolute';
+                        label.style.top = '5px';
+                        label.style.left = '14px';
+                        label.style.fontSize = '10px';
+                        label.style.color = 'rgba(255, 255, 255, 0.8)';
+                        label.style.opacity = '0';
+                        label.style.transform = 'translateY(5px)';
+                        label.style.transition = 'all 0.3s ease';
+                        label.textContent = input.getAttribute('placeholder');
+                        input.parentElement.appendChild(label);
+                        
+                        // Animate in
+                        setTimeout(() => {
+                            label.style.opacity = '1';
+                            label.style.transform = 'translateY(0)';
+                        }, 10);
+                    } else {
+                        const label = input.parentElement.querySelector('.pseudo-label');
+                        label.style.opacity = '1';
+                        label.style.transform = 'translateY(0)';
+                    }
+                });
+                
+                input.addEventListener('blur', () => {
+                    if (!input.value) {
+                        input.style.paddingTop = '12px';
+                        input.style.paddingBottom = '12px';
+                        
+                        const label = input.parentElement.querySelector('.pseudo-label');
+                        if (label) {
+                            label.style.opacity = '0';
+                            label.style.transform = 'translateY(5px)';
+                        }
+                    }
+                });
+            });
+        });
+        
+        // Add keyboard animation
+        document.addEventListener('keydown', (e) => {
+            const ripple = document.createElement('div');
+            ripple.style.position = 'fixed';
+            ripple.style.width = '2px';
+            ripple.style.height = '2px';
+            ripple.style.borderRadius = '50%';
+            ripple.style.background = 'white';
+            ripple.style.left = Math.random() * window.innerWidth + 'px';
+            ripple.style.top = Math.random() * window.innerHeight + 'px';
+            ripple.style.zIndex = '9997';
+            ripple.style.pointerEvents = 'none';
+            document.body.appendChild(ripple);
+            
+            ripple.animate([
+                { transform: 'scale(0)', opacity: 1 },
+                { transform: 'scale(100)', opacity: 0 }
+            ], {
+                duration: 800,
+                easing: 'ease-out'
+            });
+            
+            setTimeout(() => {
+                ripple.remove();
+            }, 800);
+        });
+
+        // Page load animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.querySelector('.container');
+            container.style.opacity = '0';
+            container.style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                container.style.transition = 'opacity 1s ease, transform 1s ease';
+                container.style.opacity = '1';
+                container.style.transform = 'translateY(0)';
+            }, 200);
+            
+            // Animate inputs one by one
+            const inputs = document.querySelectorAll('.input-container');
+            inputs.forEach((input, index) => {
+                input.style.opacity = '0';
+                input.style.transform = 'translateX(-20px)';
+                
+                setTimeout(() => {
+                    input.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    input.style.opacity = '1';
+                    input.style.transform = 'translateX(0)';
+                }, 500 + (index * 100));
+            });
+        });
+    </script>
+</body>
+</html>

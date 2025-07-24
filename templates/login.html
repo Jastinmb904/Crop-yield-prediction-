@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroPredict - Smart Farming Insights</title>
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Refreshed Theme Colors - Green & Earth Tones for Agriculture */
+        :root {
+            --primary: #094b61;
+            --primary-dark: #121022;
+            --secondary: #222fa7;
+            --accent: #4d588a;
+            --light: #e0f2f1;
+            --dark: #000000;
+            --success: #13ba27;
+            --error: #f44336;
+        }
+
+        /* Enhanced Background Animations */
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        @keyframes floatBubble {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.4; }
+            100% { transform: translate(var(--translateX), var(--translateY)) rotate(var(--rotation)) scale(var(--scale)); opacity: 0; }
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(-45deg); }
+            100% { transform: translateX(100%) rotate(-45deg); }
+        }
+        
+        @keyframes pulseGlow {
+            0% { transform: scale(1); opacity: var(--min-opacity); filter: blur(var(--min-blur)); }
+            50% { transform: scale(var(--scale)); opacity: var(--max-opacity); filter: blur(var(--max-blur)); }
+            100% { transform: scale(1); opacity: var(--min-opacity); filter: blur(var(--min-blur)); }
+        }
+        
+        @keyframes floatCard {
+            0% { transform: translateY(0px) rotateZ(0deg); }
+            25% { transform: translateY(-10px) rotateZ(-0.5deg); }
+            50% { transform: translateY(-15px) rotateZ(0deg); }
+            75% { transform: translateY(-8px) rotateZ(0.5deg); }
+            100% { transform: translateY(0px) rotateZ(0deg); }
+        }
+        
+        @keyframes borderFlow {
+            0%, 100% { border-image-source: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--primary-dark)); }
+            25% { border-image-source: linear-gradient(45deg, var(--secondary), var(--accent), var(--primary-dark), var(--primary)); }
+            50% { border-image-source: linear-gradient(45deg, var(--accent), var(--primary-dark), var(--primary), var(--secondary)); }
+            75% { border-image-source: linear-gradient(45deg, var(--primary-dark), var(--primary), var(--secondary), var(--accent)); }
+        }
+        
+        @keyframes rotateBg {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.9) translateY(20px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+
+        @keyframes growShrink {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        @keyframes leaf {
+            0% { transform: rotate(0deg) translateX(0) translateY(0); }
+            25% { transform: rotate(5deg) translateX(5px) translateY(-5px); }
+            50% { transform: rotate(0deg) translateX(0) translateY(0); }
+            75% { transform: rotate(-5deg) translateX(-5px) translateY(-5px); }
+            100% { transform: rotate(0deg) translateX(0) translateY(0); }
+        }
+
+        @keyframes raindrop {
+            0% { 
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            50% {
+                opacity: 0.7;
+            }
+            100% { 
+                opacity: 0;
+                transform: translateY(100px);
+            }
+        }
+
+        @keyframes dash {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+        
+        /* Main Body Styles */
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--dark);
+            position: relative;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+        
+        /* Animated Background */
+        .bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: -2;
+        }
+        
+        .bg-gradient {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: linear-gradient(-45deg, var(--accent), var(--primary-dark), var(--primary), var(--primary-dark), var(--accent));
+            background-size: 400% 400%;
+            animation: gradientFlow 15s ease infinite, rotateBg 120s linear infinite;
+            opacity: 0.4;
+        }
+        
+        .bg-overlay {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle at center, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.6) 50%, rgba(0,0,0,0.9) 100%);
+            z-index: -1;
+        }
+        
+        .particle-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+        
+        .glow {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(to bottom right, rgba(145, 142, 142, 0.2), rgba(255,255,255,0.05));
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+            pointer-events: none;
+        }
+
+        /* Crop pattern overlay */
+        .crop-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M10 0L8 8L0 10L8 12L10 20L12 12L20 10L12 8L10 0Z' fill='rgba(39, 174, 96, 0.03)'/%3E%3C/svg%3E");
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
+        /* Raindrop animations */
+        .rain-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+
+        .raindrop {
+            position: absolute;
+            width: 1px;
+            height: 20px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.5));
+            animation: raindrop 2s linear infinite;
+        }
+        
+        /* Login Container Styles */
+        .login-wrapper {
+            position: relative;
+            z-index: 10;
+            animation: floatCard 6s ease-in-out infinite;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+        
+        .login-container {
+            width: 420px;
+            background: rgba(16, 33, 65, 0.7);
+            backdrop-filter: blur(30px);
+            border-radius: 20px;
+            padding: 50px 40px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), 0 0 40px rgba(11, 15, 80, 0.2);
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            border-image: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--primary-dark));
+            border-image-slice: 1;
+            animation: borderFlow 8s linear infinite;
+        }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(167, 24, 24, 0.1) 0%, rgba(201, 48, 48, 0) 60%);
+            transform: rotate(30deg);
+            pointer-events: none;
+            opacity: 0.4;
+        }
+        
+        .login-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 20px;
+            padding: 2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--primary-dark));
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+        
+        .shine-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            opacity: 0.3;
+        }
+        
+        .shine-effect::after {
+            content: '';
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(-45deg);
+            animation: shimmer 6s ease-in-out infinite;
+        }
+        
+        /* Login Content Styling */
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+            animation: fadeInScale 0.8s forwards;
+        }
+        
+        .login-logo {
+            display: block;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(20, 25, 160, 0.5), inset 0 0 15px rgba(12, 121, 145, 0.2);
+            position: relative;
+            animation: growShrink 3s ease-in-out infinite;
+        }
+
+        /* Plant growing animation */
+        .plant-icon {
+            position: relative;
+            width: 40px;
+            height: 40px;
+        }
+
+        .plant-stem {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 20px;
+            background: #08146c;
+            border-radius: 2px;
+        }
+
+        .plant-leaf {
+            position: absolute;
+            width: 12px;
+            height: 16px;
+            background: var(--primary);
+            border-radius: 50% 50% 50% 0;
+            transform-origin: bottom right;
+        }
+
+        .plant-leaf:nth-child(1) {
+            top: 12px;
+            left: 12px;
+            transform: rotate(-45deg);
+            animation: leaf 3s ease-in-out infinite;
+        }
+
+        .plant-leaf:nth-child(2) {
+            top: 12px;
+            right: 12px;
+            transform: rotate(45deg) scaleX(-1);
+            animation: leaf 3s ease-in-out infinite;
+            animation-delay: 0.5s;
+        }
+
+        .plant-leaf:nth-child(3) {
+            top: 0;
+            left: 19px;
+            transform: rotate(-15deg);
+            animation: leaf 4s ease-in-out infinite;
+            animation-delay: 1s;
+        }
+        
+        .login-header h2 {
+            color: white;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            background: linear-gradient(to right, var(--light), var(--secondary), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+        
+        .login-header p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Form Element Styling */
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+            animation: fadeInScale 0.8s forwards;
+        }
+        
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        
+        .form-group label {
+            display: block;
+            color: white;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            position: relative;
+            padding-left: 15px;
+        }
+
+        .form-group label::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 6px;
+            height: 6px;
+            background-color: var(--secondary);
+            border-radius: 50%;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 18px 20px 18px 50px;
+            background: rgba(255, 255, 255, 0.08);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+        }
+        
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .input-group input:focus {
+            outline: none;
+            box-shadow: inset 0 0 0 2px var(--primary), 0 0 15px rgba(39, 174, 96, 0.3);
+            background: rgba(255, 255, 255, 0.12);
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s;
+        }
+        
+        .input-group input:focus + .input-icon {
+            color: var(--primary);
+        }
+
+        /* Focus line animation */
+        .input-group::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            transition: width 0.3s ease, left 0.3s ease;
+            border-radius: 2px;
+        }
+
+        .input-group:focus-within::after {
+            width: 100%;
+            left: 0;
+        }
+        
+        /* Button Styling */
+        .action-button {
+            position: relative;
+            display: block;
+            width: 100%;
+            padding: 18px;
+            margin-top: 30px;
+            background: linear-gradient(45deg, var(--primary-dark), var(--primary), var(--primary-dark));
+            background-size: 200% 200%;
+            animation: gradientFlow 6s ease infinite;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(14, 63, 133, 0.786);
+            z-index: 1;
+            overflow: hidden;
+            opacity: 0;
+            animation: fadeInScale 0.8s forwards;
+            animation-delay: 0.3s;
+        }
+        
+        .action-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(6, 5, 84, 0.4);
+        }
+        
+        .action-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.4s;
+        }
+        
+        .action-button:hover::before {
+            left: 100%;
+        }
+
+        /* Button SVG decoration */
+        .button-decoration {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .button-decoration svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .button-decoration path {
+            stroke: rgba(255, 255, 255, 0.2);
+            stroke-width: 2;
+            fill: none;
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+        }
+
+        .action-button:hover .button-decoration path {
+            animation: dash 1s linear forwards;
+        }
+        
+        /* Flash Message Styling */
+        .flash-container {
+            margin-bottom: 20px;
+            animation: fadeInScale 0.8s forwards, shake 0.5s;
+        }
+        
+        .flash-message {
+            background: rgba(244, 67, 54, 0.15);
+            color: #ff99aa;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            border-left: 4px solid var(--error);
+            position: relative;
+        }
+        
+        .flash-message::before {
+            content: '⚠️';
+            margin-right: 10px;
+        }
+        
+        /* Footer Styling */
+        .login-footer {
+            text-align: center;
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            position: relative;
+            z-index: 1;
+            opacity: 0;
+            animation: fadeInScale 0.8s forwards;
+            animation-delay: 0.4s;
+        }
+        
+        .login-footer a {
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            position: relative;
+            display: inline-block;
+            padding: 0 4px;
+        }
+        
+        .login-footer a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+        
+        .login-footer a:hover {
+            text-shadow: 0 0 10px rgba(249, 168, 37, 0.5);
+        }
+        
+        .login-footer a:hover::after {
+            width: 100%;
+        }
+
+        /* Logo styling */
+        .logo-container {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            z-index: 3;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 10px rgba(9, 18, 48, 0.7);
+            display: flex;
+            align-items: center;
+            animation: glowPulse 3s infinite;
+        }
+
+        .logo span {
+            color: var(--secondary);
+            position: relative;
+        }
+
+        /* Add animated underline to logo */
+        .logo span::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--secondary);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.5s ease;
+            animation: pulseLine 3s infinite;
+        }
+
+        .logo:hover span::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        @keyframes pulseLine {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .logo-icon {
+            margin-right: 15px;
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Add rotating shine effect to logo icon */
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 45%, rgba(255, 255, 255, 0.5) 50%, transparent 55%);
+            animation: shineEffect 3s infinite;
+        }
+
+        @keyframes shineEffect {
+            0% { transform: rotate(0) scale(0.5); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        .logo-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { text-shadow: 0 0 10px rgba(39, 115, 174, 0.7); }
+            50% { text-shadow: 0 0 20px rgba(7, 36, 59, 0.9), 0 0 30px rgba(37, 249, 217, 0.8); }
+        }
+
+        /* Add data visualization animation */
+        .data-viz {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 180px;
+            height: 80px;
+            opacity: 0.2;
+            pointer-events: none;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+        }
+
+        .data-bar {
+            width: 8px;
+            background: linear-gradient(to top, var(--primary), var(--secondary));
+            border-radius: 4px 4px 0 0;
+            transition: height 0.7s ease;
+        }
+
+        /* For Material Icons */
+        .material-icons {
+            font-family: 'Material Icons';
+            font-weight: normal;
+            font-style: normal;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+    </style>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Logo in top left -->
+    <div class="logo-container">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M7,21H3V13H7V21M11,21H9V5H11V21M15,21H13V13H15V21M19,21H17V9H19V21M23,3H1V23H23V3M5,3A2,2 0 0,1 7,5A2,2 0 0,1 5,7A2,2 0 0,1 3,5A2,2 0 0,1 5,3Z" />
+                </svg>
+            </div>
+            <div>Agro<span>Predict</span></div>
+        </div>
+    </div>
+
+    <!-- Background Elements -->
+    <div class="bg-container">
+        <div class="bg-gradient"></div>
+        <div class="crop-pattern"></div>
+        <div class="bg-overlay"></div>
+        <div class="particle-container" id="particle-container"></div>
+        <div class="rain-container" id="rain-container"></div>
+    </div>
+   
+    <!-- Login Box -->
+    <div class="login-wrapper">
+        <div class="login-container">
+            <div class="shine-effect"></div>
+            
+            <div class="login-header">
+                <div class="login-logo">
+                    <div class="plant-icon">
+                        <div class="plant-stem"></div>
+                        <div class="plant-leaf"></div>
+                        <div class="plant-leaf"></div>
+                        <div class="plant-leaf"></div>
+                    </div>
+                </div>
+                <h2>Welcome to AgroPredict</h2>
+                <p>Enter your credentials to access smart farming insights</p>
+            </div>
+            
+            {% with messages = get_flashed_messages(with_categories=True) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-container">
+                            <div class="flash-message">{{ message }}</div>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <form method="POST">
+                <div class="form-group">
+                    <label>Username</label>
+                    <div class="input-group">
+                        <input type="text" name="username" required placeholder="Enter your username">
+                        <!-- <input type="text" name="username" required placeholder="Enter your username"
+       oninput="this.value = this.value.toUpperCase();"> -->
+
+       <!-- <input type="text" name="username" required placeholder="Enter your username"
+       oninput="this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1).toLowerCase();"> -->
+
+
+                        <!-- <i class="material-icons input-icon">person</i> -->
+                    </div>
+                </div>
+               
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-group">
+                        <input type="password" name="password" required placeholder="Enter your password">
+                        <!-- <i class="material-icons input-icon">lock</i> -->
+                    </div>
+                </div>
+                
+                <button type="submit" class="action-button">
+                    Sign In
+                    <div class="button-decoration">
+                        <svg>
+                            <rect x="2" y="2" width="calc(100% - 4px)" height="calc(100% - 4px)" rx="10"></rect>
+                        </svg>
+                    </div>
+                </button>
+            </form>
+            
+            <div class="login-footer">
+                <p>Don't have an account? <a href="{{ url_for('register') }}">Create Account</a></p>
+            </div>
+
+            <!-- Data visualization animation -->
+            <div class="data-viz" id="data-viz">
+                <div class="data-bar" style="height: 40%;"></div>
+                <div class="data-bar" style="height: 60%;"></div>
+                <div class="data-bar" style="height: 35%;"></div>
+                <div class="data-bar" style="height: 70%;"></div>
+                <div class="data-bar" style="height: 50%;"></div>
+                <div class="data-bar" style="height: 65%;"></div>
+                <div class="data-bar" style="height: 45%;"></div>
+                <div class="data-bar" style="height: 55%;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript for Advanced Background -->
+    <script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const particleContainer = document.getElementById('particle-container');
+    const rainContainer = document.getElementById('rain-container');
+    const dataViz = document.getElementById('data-viz');
+    
+    // Create animated glowing bubbles
+    function createParticles() {
+        for (let i = 0; i < 15; i++) {
+            // Create glowing elements
+            const glow = document.createElement('div');
+            glow.classList.add('glow');
+            
+            // Randomize properties
+            const size = Math.random() * 150 + 50;
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            
+            // Set custom properties for animations
+            glow.style.setProperty('--min-opacity', '0.03');
+            glow.style.setProperty('--max-opacity', '0.07');
+            glow.style.setProperty('--min-blur', '50px');
+            glow.style.setProperty('--max-blur', '70px');
+            glow.style.setProperty('--scale', '1.2');
+            
+            // Set position and size
+            glow.style.width = `${size}px`;
+            glow.style.height = `${size}px`;
+            glow.style.left = `${x}px`;
+            glow.style.top = `${y}px`;
+            
+            // Set colors
+            const colors = ['#1e88e5', '#0d47a1', '#64b5f6', '#4fc3f7'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            glow.style.boxShadow = `0 0 ${size / 2}px ${color}`;
+            glow.style.background = color;
+            
+            // Set animation
+            glow.style.animation = `pulseGlow ${Math.random() * 8 + 4}s ease-in-out infinite`;
+            glow.style.animationDelay = `${Math.random() * 5}s`;
+            
+            // Add to container
+            particleContainer.appendChild(glow);
+        }
+        
+        // Create floating bubbles
+        for (let i = 0; i < 20; i++) {
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble');
+            
+            // Randomize properties
+            const size = Math.random() * 40 + 10;
+            const x = Math.random() * window.innerWidth;
+            const y = Math.random() * window.innerHeight;
+            
+            // Random final position
+            const translateX = (Math.random() - 0.5) * 200;
+            const translateY = -Math.random() * 200 - 100;
+            const rotation = (Math.random() - 0.5) * 180;
+            const scale = 0.8 + Math.random() * 0.4;
+            
+            // Set CSS variables for animation
+            bubble.style.setProperty('--translateX', `${translateX}px`);
+            bubble.style.setProperty('--translateY', `${translateY}px`);
+            bubble.style.setProperty('--rotation', `${rotation}deg`);
+            bubble.style.setProperty('--scale', `${scale}`);
+            
+            // Set size and position
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            bubble.style.left = `${x}px`;
+            bubble.style.bottom = `${y}px`;
+            
+            // Set animation duration
+            const duration = Math.random() * 10 + 15;
+            bubble.style.animation = `floatBubble ${duration}s linear infinite`;
+            bubble.style.animationDelay = `${Math.random() * 5}s`;
+            
+            // Add to container
+            particleContainer.appendChild(bubble);
+        }
+    }
+    
+    // Create rain effect
+    function createRain() {
+        for (let i = 0; i < 50; i++) {
+            const raindrop = document.createElement('div');
+            raindrop.classList.add('raindrop');
+            
+            // Randomize properties
+            const delay = Math.random() * 2;
+            const duration = Math.random() + 1;
+            const posX = Math.random() * 100;
+            
+            raindrop.style.left = `${posX}%`;
+            raindrop.style.animationDelay = `${delay}s`;
+            raindrop.style.animationDuration = `${duration}s`;
+            
+            rainContainer.appendChild(raindrop);
+        }
+    }
+    
+    // Animate data visualization bars
+    function animateDataBars() {
+        const bars = dataViz.querySelectorAll('.data-bar');
+        
+        setInterval(() => {
+            bars.forEach(bar => {
+                const height = Math.random() * 70 + 20;
+                bar.style.height = `${height}%`;
+            });
+        }, 2000);
+    }
+    
+    // Initialize animations
+    createParticles();
+    createRain();
+    animateDataBars();
+    
+    // Recreate particles on window resize
+    window.addEventListener('resize', function() {
+        particleContainer.innerHTML = '';
+        createParticles();
+    });
+});
+
+</script>
